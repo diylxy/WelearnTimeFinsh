@@ -11,6 +11,8 @@ class NewThread(threading.Thread):
         self.x = x
     def run(self):
         startstudy(self.learntime,self.x)
+def printline():
+    print('-'*51)
 def startstudy(learntime,x):
 #    print('\n位置: '+x['location']+'\n已学习: '+x['learntime']+'
 #    即将学习'+str(learntime)+'秒～',end='')
@@ -50,21 +52,43 @@ def startstudy(learntime,x):
     req1 = session.post(url,data={'action':'savescoinfo160928','cid':cid,'scoid':scoid,'uid':uid,'progress':progress,'crate':crate,'status':'unknown','cstatus':cstatus,'trycount':'0'},headers={'Referer':'https://welearn.sflep.com/Student/StudyCourse.aspx'})
 
 
-print('********** 特别鸣谢Avenshy **********\n********** 此版本更新于 Hhy **********\n\t\t\tVersion:0.3dev\n')
 session = requests.Session()
-username = input('账号: ')
-password = input('密码: ')
-
-print('登录中...',end=' ')
-url = 'https://sso.sflep.com/cas/login?service=http%3a%2f%2fwelearn.sflep.com%2fuser%2floginredirect.aspx'
-req = session.get(url)
-lt = req.text[req.text.find('name="lt" value="') + 17:req.text.find('name="lt" value="') + 17 + 76]
-url = 'https://sso.sflep.com/cas/login?service=http%3a%2f%2fwelearn.sflep.com%2fuser%2floginredirect.aspx'
-req = session.post(url,data={'username':username,'password':password,'lt':lt,'_eventId':'submit','submit':'LOGIN'})
-if('请登录' in req.text):
-    input('Fail!!\n')
-    exit(0)
-print('登录成功!!\n\n')
+loginmode=input('请选择登录方式: \n  1.账号密码登录\n  2.Cookie登录\n\n请输入数字1或2: ')
+printline()
+if loginmode=='1':
+    username = input('请输入账号: ')
+    password = input('请输入密码: ')
+    # 登录模块
+    response = requests.get(
+        'https://welearn.sflep.com/user/prelogin.aspx?loginret=http%3a%2f%2fwelearn.sflep.com%2fuser%2floginredirect.aspx', allow_redirects=False)
+    rturl = response.headers['Location'].replace(
+        'https://sso.sflep.com/idsvr', '')
+    data = {
+        'rturl': rturl,
+        'account': username,
+        'pwd': password,
+    }
+    res = session.post(
+        "https://sso.sflep.com/idsvr/account/login", data=data)
+    url = 'https://sso.sflep.com/idsvr'+rturl
+    res = session.get(url)
+    if "我的主页" in res.text:
+        print("登录成功!!")
+    else:
+        input("登录失败!!")
+        exit(0)
+elif loginmode=='2':
+    try:
+        cookie = dict(map(lambda x:x.split('=',1),input('请粘贴Cookie: ').split(";")))
+    except:
+        input('Cookie输入错误!!!')
+        exit(0)
+    for k,v in cookie.items():
+          session.cookies[k]=v
+else:
+    input('输入错误!!')
+    exit(0) 
+printline()
 while True:
     url = 'https://welearn.sflep.com/ajax/authCourse.aspx?action=gmc'
     req = session.get(url,headers={'Referer':'https://welearn.sflep.com/student/index.aspx'})
