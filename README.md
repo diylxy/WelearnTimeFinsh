@@ -29,3 +29,5 @@ WeLearn刷学习时长
 ### `v0.1dev`
 
 * 敲出首个版本的代码
+## WelearnTimeFinishNG.py
+此程序为WelearnTimeFinish.py的修改版，提供更详细的UI显示，Ctrl+C后自动保存进度并退出，全自动模式自动开始学习下一单元的内容，结束后显示统计信息的功能，因为与原作者的代码相差较大，故没有直接合并。  
